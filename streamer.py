@@ -30,7 +30,8 @@ class Stream:
         This function creates a stream of messages at different
         intervals (for testing), and sends them to a message handler.
         The message handler will return (by being called) sychronized
-        messages when enough time has passed.
+        messages when enough time has passed, or if the max number of
+        messages have been streamed.
 
         This function will create a message handler object to read and
         save synched messages.  It will then call helper functions
@@ -41,15 +42,15 @@ class Stream:
 
         print('Creating stream of messages...')  # for testing
 
-        # assumed parameters for testing
+        # Assumed parameters for testing
         N = 10  # number of possible different sources for the messages
-        delta = 2.5  # seconds, window of messages to capture
+        time_interval = 5  # secs, criteria for when to send synchronized messages back
+        delta = time_interval/2  # seconds, window of messages to capture
+        max_messages = 6  #  also limit number of messages streamed before getting a syched message back
 
         # variables for when to synchronize messages
-        msg_handler = handler.MessageHandler(delta)  # create a Message_handler
+        msg_handler = handler.MessageHandler(delta, time_interval)  # create a Message_handler
         current_msg = 0  # counter
-        # start_time = time.time()  # start the timer
-        # max_time = 5  # criteria for when to get synchronized messages
 
         # infinite loop to create a stream of messages, and also when to synchronize messages
         while(True):

@@ -37,7 +37,7 @@ class SynchedMessages:
         :param timestamp: float
         :param delta_messages: list of messages
         """
-        self.timestamp = timestamp
+        self.timestamp = timestamp  # time stamp of SynchedMessage
         self.delta_messages = delta_messages  # list of message in window delta
 
 
@@ -47,18 +47,19 @@ class MessageHandler:
     on a time window (timestamp-delta to timestamp+delta) and outputs a
     SynchedMessages object
     """
-    def __init__(self, delta):
+    def __init__(self, delta, time_interval, max_message):
         """
-        This constructor declares a raw list of bundled messages, ie,
+        This constructor declares a raw list of messages, ie,
         can be from multiple sources or in any window
+
         """
-        self.raw_messages = []  # track all raw messages read
-        # self.msg_counter = 0  # current message number
-        # self.max_messages = 5  # max number of messages before sync
-        self.delta = delta
-        self.is_timer_on = False
+        self.raw_messages = []  # track all raw messages read (raw = not validated yet)
+        self.msg_counter = 0  # current message number
+        self.max_messages = max_message  # max number of messages before sync
+        self.delta = delta  # how large to make window of synched messages to send
+        self.is_timer_on = False  # using an alarm to track how long since last sync
         self.start_time = 0  # timer declared
-        self.max_time = 5  # secs, criteria for when to send synchronized messages back
+        self.max_time = time_interval  # secs, criteria for when to send synchronized messages back
 
     def read_stream(self, message):
         """
@@ -68,16 +69,18 @@ class MessageHandler:
         """
 
         self.raw_messages.append(message)  # append messages to list
+        self.msg_counter += 1  # increment number of raw messages received
 
         # if timer is off, start the timer
         if not self.is_timer_on:
             self.is_timer_on = True
             self.start_time = time.time()  # start the timer
 
-        # if enough time passed, send the synchronized messages, if not, return None
+        # time elapsed since last synched message sent
         time_elapsed = time.time() - self.start_time
 
-        if time_elapsed > self.max_time:
+        if time_elapsed > self.max_time or self.msg_counter > self.max_messages:
+        # if time_elapsed > self.max_time:
             # get synched message in a delta time window
             t = time.time() - time_elapsed / 2  # time t (the middle point in how much time has passed)
             synched_msg = self.get_messages(t, self.delta)
@@ -85,6 +88,7 @@ class MessageHandler:
             print('Elapsed time since last synched_message output: {}'.format(time_elapsed))
             start_time = time.time()  # reset clock
             self.is_timer_on = False  # turn off timer
+            self.msg_counter = 0
             return synched_msg
         else:
             return None
@@ -95,7 +99,8 @@ class MessageHandler:
         This function iterates through all the raw grouped messages and returns
         a SynchedMessages object that meets the criteria, which are if the
         message timestamp is in the desired window (timestamp-delta, timestamp+delta),
-        and that only one message from each of the N sources is included.
+        and that only one message from each of the N sources is included.  These
+        are "validated" messages.
 
         :param timestamp: float
         :param delta: float
