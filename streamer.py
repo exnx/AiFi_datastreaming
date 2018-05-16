@@ -49,7 +49,7 @@ class Stream:
         max_messages = 6  #  also limit number of messages streamed before getting a syched message back
 
         # variables for when to synchronize messages
-        msg_handler = handler.MessageHandler(delta, time_interval)  # create a Message_handler
+        msg_handler = handler.MessageHandler(delta, time_interval, max_messages)  # create a Message_handler
         current_msg = 0  # counter
 
         # infinite loop to create a stream of messages, and also when to synchronize messages

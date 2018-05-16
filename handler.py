@@ -63,7 +63,8 @@ class MessageHandler:
 
     def read_stream(self, message):
         """
-        reads a message and appends to list
+        Reads a message and appends to list, and checks if enough time or enough messages
+        have been met before getting a SynchedMessage.
 
         :param message: Message object
         """
@@ -79,20 +80,18 @@ class MessageHandler:
         # time elapsed since last synched message sent
         time_elapsed = time.time() - self.start_time
 
+        # if enough time passed or enough messages, send SynchedMessage
         if time_elapsed > self.max_time or self.msg_counter > self.max_messages:
-        # if time_elapsed > self.max_time:
             # get synched message in a delta time window
             t = time.time() - time_elapsed / 2  # time t (the middle point in how much time has passed)
             synched_msg = self.get_messages(t, self.delta)
             print('\n')
             print('Elapsed time since last synched_message output: {}'.format(time_elapsed))
-            start_time = time.time()  # reset clock
             self.is_timer_on = False  # turn off timer
             self.msg_counter = 0
             return synched_msg
         else:
             return None
-
 
     def get_messages(self, timestamp, delta):
         """
@@ -117,6 +116,6 @@ class MessageHandler:
                 if message.timestamp < timestamp + delta and \
                     message.timestamp > timestamp - delta:
                     delta_messages.append(message)  # add message to list
-        # create a synched_message object, return it
-        self.raw_messages = []
+        self.raw_messages = []  # reset raw_messages list
+        # return a SynchedMessage object
         return SynchedMessages(timestamp, delta_messages)
