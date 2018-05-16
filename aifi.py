@@ -15,7 +15,7 @@ class Message:
         self.body = body
         self.source = source
 
-class Synched_messages:
+class SynchedMessages:
 
     """
     A class that has synchronized messages within a given time window
@@ -32,11 +32,11 @@ class Synched_messages:
         self.timestamp = timestamp
         self.delta_messages = delta_messages  # list of message in window delta
 
-class Message_handler:
+class MessageHandler:
     """
     A class that handles messages by reading and synchronizes (groups) messages based
     on a time window (timestamp-delta to timestamp+delta) and outputs a
-    Synched_messages object
+    SynchedMessages object
     """
     def __init__(self, delta):
         """
@@ -55,35 +55,14 @@ class Message_handler:
         :param message: Message object
         """
 
-        # self.sync_time_counter = time.time()  # get current time
-
-        # check how much time passed
-
         self.raw_messages.append(message)
 
-        # self.msg_counter += 1
-
-        # if self.msg_counter > self.max_messages:
-        #     self.msg_counter = 0
-        #     return self.get_messages(message.timestamp, self.delta)
-        #
-        # return None
-
-        # set conditions on when to return messages
-        # if self.msg_counter > self.max_messages or self.sync_time_counter > self.sync_time_max:
-        #     self.get_messages(message.timestamp)
-        #
-        #     return self.get_messages(message.timestamp,self.delta)
-        # else:
-        #     return None
-
-    # output messages within time frame, and validates sources
     def get_messages(self, timestamp, delta):
         """
         This function iterates through all the raw grouped messages and returns
-        a Synched_messages object that meet the criteria, which are if the
+        a SynchedMessages object that meets the criteria, which are if the
         message timestamp is in the desired window (timestamp-delta, timestamp+delta),
-        and that only one message from each source is included.
+        and that only one message from each of the N sources is included.
 
         :param timestamp: float
         :param delta: float
@@ -102,4 +81,4 @@ class Message_handler:
                     delta_messages.append(message)  # add message to list
         # create a synched_message object, return it
         self.raw_messages = []
-        return Synched_messages(timestamp, delta_messages)
+        return SynchedMessages(timestamp, delta_messages)

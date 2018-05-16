@@ -2,86 +2,98 @@ import time
 import random
 import aifi
 
-class Test:
+class Stream:
+    '''
+
+    This class allows you to create and stream messages (at random intervals)
+    and output a synchronized message (grouped together) based on a window of time.
+
+    It uses classes in the aifi.py to process a stream of messages
+    and get a synchronized message object.
+
+    '''
 
     def __init__(self):
         print('Test initialized...')
-        self.synched_list = []
+        self.synched_list = []  # saves the synched messages in a list
 
     def stream_messages(self):
         '''
-        This function creates a list of message objects at different
+        This function creates a stream of messages at different
         intervals (for testing), and sends them to a message handler.
-        The message handler will return synchronized messages when
-        a condition is met.
+        The message handler will return (by being called) sychronized
+        messages when enough time has passed.
 
-        :return: a list of message objects
+        This function will create a message handler object to read and
+        save synched messages.  It will then call helper functions
+        to save and display the synched messages.
+
+        :return: nothing
         '''
 
-        print('Creating messages...')
-        N = 10  # number of different sources
+        print('Creating messages...')  # for testing
+
+        # assumed parameters for testing
+        N = 10  # number of possible different sources for the messages
         delta = 2.5  # seconds, window of messages to capture
-        msg_handler = aifi.Message_handler(delta)  # create a Message_handler
-        current_msg = 0
 
-        start_time = time.time()
-        max_time = 5
+        # variables for when to synchronize messages
+        msg_handler = aifi.MessageHandler(delta)  # create a Message_handler
+        current_msg = 0  # counter
+        start_time = time.time()  # start the timer
+        max_time = 5  # criteria for when to get synchronized messages
 
+        # infinite loop to create a stream of messages, and also when to synchronize messages
         while(True):
-            # create a message at random intervals
+            # create a message (will be made at random intervals)
             source = random.randint(0, N)  # assign random source
-            body = 'this is the body of the message, all the same'
+            body = 'This is the body of the message, all the same'
             timestamp = time.time()  # in seconds, float
             message = aifi.Message(timestamp, body, source)  # create a message obj
+            current_msg += 1  # update number of messages
 
-            print("raw message {} created at time {}".format(current_msg, message.timestamp))
-            current_msg += 1
+            # for debugging
+            print("Raw message {} created at time {}".format(current_msg, message.timestamp))
 
-            # read in message
+            #  send message to msg_handler
             msg_handler.read_stream(message)
 
             # if enough time passed, get the synchronized messages
             time_elapsed = time.time() - start_time
             if time_elapsed > max_time:
-                synched_msg = msg_handler.get_messages(time.time() - max_time/2, delta)
-                print('elapsed time since last output: {}'.format(time_elapsed))
+
+                # get synched message in a delta time window
+                t = time.time() - time_elapsed/2  # time t (the middle point in how much time has passed)
+                synched_msg = msg_handler.get_messages(t, delta)
+                print('Elapsed time since last output: {}'.format(time_elapsed))
                 start_time = time.time()  # reset clock
 
                 # save synched_messages and display
-                self.save_synched_messages(synched_msg)
+                self.synched_list.append(synched_msg)
                 self.display_synched_messages(synched_msg)
 
-            # sleep sporadic time between .1 and 2 second
+            # sleep sporadic time between .1 and 2 seconds (to create a stream of random intervals)
             rand_int = random.randint(100, 2000)
             time.sleep(rand_int / 1000)
 
-    def save_synched_messages(self,synched_messages):
-        self.synched_list.append(synched_messages)
-
     def display_synched_messages(self,synched_messages):
-        print('Synchronized bundle at ...',synched_messages.timestamp)
-        print('size = ', len(synched_messages.delta_messages))
-        for index,sync_msg in enumerate(synched_messages.delta_messages):
-            print('single sync message {}, at time {}'.format(index,sync_msg.timestamp))
+        '''
 
+        This function displays the messages in the synched object
+
+        :param synched_messages: Synched_messages
+
+        '''
+
+        print('Synchronized bundle at time: ',synched_messages.timestamp)
+        print('Number of synched message = ', len(synched_messages.delta_messages))
+        print('Printing all messages in synched object...')
+        for index,sync_msg in enumerate(synched_messages.delta_messages):
+            print('Single sync message {}, at time {}'.format(index,sync_msg.timestamp))
 
 def main():
-    test = Test()  # create test
-    test.stream_messages()  # create messages
-
-    # # get timestamp of middle message
-    # middle = len(messages)//2
-    # print('middle index is: ',middle)
-    # mid_time = messages[middle].timestamp
-    # delta = 5 # second
-    #
-    # # get messages using a timestamp and delta
-    # synched_messages = msg_handler.get_messages(mid_time,delta)
-    #
-    # print('number of synched messages: ', len(synched_messages.delta_messages))
-    #
-    # for index,message in enumerate(synched_messages.delta_messages):
-    #     print('message {}, message timestamp {}'.format(index, message.timestamp))
+    stream1 = Stream()  # create test
+    stream1.stream_messages()  # create and synchronize messages
 
 if __name__ == "__main__":
     main()
