@@ -14,7 +14,7 @@ Analysis of solution:
 Questions:  "What are the caveats of your particular implementation? Assuming an incoming message rate,
 what is the worse case and best case scenario for your implementation?"
 
-Answer:  for testing, I assumed a random incoming message rate between 0.2 to 2 secs.
+Answer:  for testing, I assumed a random incoming message rate between 0.1 to 2 secs.
 
 The best case scenario for my solution is that the sources of the messages are all random and have a large range
 of possible sources.  If they're random, then most of the messages streamed will be included in the SynchedMessages.
