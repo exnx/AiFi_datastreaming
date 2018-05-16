@@ -1,5 +1,7 @@
 # AiFi_datastreaming
 
+To test this solution, run the streamer.py file.
+
 The streamer.py file creates a stream of messages, and uses a MessageHandler object from the handler.py
 file to synchronize messages.  The MessageHandler will return a SynchedMessages at certain time
 intervals (after 5 seconds or more), or if a maximum number of messages have been streamed.  Otherwise
