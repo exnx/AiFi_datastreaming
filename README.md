@@ -37,6 +37,6 @@ SynchedMessages back, ie, send a SynchedMessages more often.
 
 Caveat:
 
-My solution was tested by creating message and reading them at the same time.  Ideally, this could
+My solution was tested by creating a message and reading them at the same time.  Ideally, this could
 be done with multithreading, where the messages are created independently.  This would
 allow my handler to check for conditions not based on when messages are created.
