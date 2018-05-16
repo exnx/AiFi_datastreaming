@@ -14,9 +14,9 @@ Analysis of solution:
 Questions:  "What are the caveats of your particular implementation? Assuming an incoming message rate,
 what is the worse case and best case scenario for your implementation?"
 
-Answer:  for testing, I assumed a random incoming message rate between 0.1 to 2 secs.
-
 The worst and best case scenarios for my solution have an O(n) time complexity.
+
+Answer:  for testing, I assumed a random incoming message rate between 0.1 to 2 secs.
 
 Qualitatively, the best case scenario for my solution is that the sources of the messages are all random and have a
 large range of possible sources.  If they're random, then most of the messages streamed will be included in the
