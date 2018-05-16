@@ -39,7 +39,7 @@ class Stream:
         :return: nothing
         '''
 
-        print('Creating messages...')  # for testing
+        print('Creating stream of messages...')  # for testing
 
         # assumed parameters for testing
         N = 10  # number of possible different sources for the messages
@@ -60,7 +60,7 @@ class Stream:
             message = handler.Message(timestamp, body, source)  # create a message obj
             current_msg += 1  # update number of messages
 
-            # for debugging
+            # for visualization
             print("Raw message {} created at time {}".format(current_msg, message.timestamp))
 
             #  send message to msg_handler
@@ -71,7 +71,7 @@ class Stream:
                 self.synched_list.append(sync_msg)
                 self.display_synched_messages(sync_msg)
 
-            # sleep sporadic time between .1 and 2 seconds (to create a stream of random intervals)
+            # sleep sporadic time between .1 and 2 seconds (to create a stream of random intervals as inputs)
             rand_int = random.randint(100, 2000)
             time.sleep(rand_int / 1000)
 
@@ -92,7 +92,7 @@ class Stream:
         print('\n')
 
 def main():
-    stream1 = Stream()  # create test
+    stream1 = Stream()  # create Stream object
     stream1.stream_messages()  # create and synchronize messages
 
 if __name__ == "__main__":
