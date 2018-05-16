@@ -84,7 +84,7 @@ class MessageHandler:
         if time_elapsed > self.max_time or self.msg_counter > self.max_messages:
             # get synched message in a delta time window
             t = time.time() - time_elapsed / 2  # time t (the middle point in how much time has passed)
-            synched_msg = self.get_messages(t, self.delta)
+            synched_msg = self.get_messages(t, self.delta) # get the SynchedMessage
             print('\n')
             print('Elapsed time since last synched_message output: {}'.format(time_elapsed))
             self.is_timer_on = False  # turn off timer

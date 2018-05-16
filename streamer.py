@@ -64,7 +64,8 @@ class Stream:
             # for visualization
             print("Raw message {} created at time {}".format(current_msg, message.timestamp))
 
-            #  send message to msg_handler
+            #  send message to msg_handler (alternatively, this could be run
+            #  independently with multithreading
             sync_msg = msg_handler.read_stream(message)
 
             # if response returned, save and display
