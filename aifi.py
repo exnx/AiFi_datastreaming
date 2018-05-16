@@ -1,3 +1,5 @@
+import time
+
 class Message:
     """
     A class containing a message body, timestamp, source
@@ -22,13 +24,13 @@ class Synched_messages:
     class to match the output in the written challenge.
 
     """
-    def __init__(self,timestamp,delta_messages):
+    def __init__(self,timestamp, delta_messages):
         """
         :param timestamp: float
         :param delta_messages: list of messages
         """
         self.timestamp = timestamp
-        self.delta_messages = delta_messages
+        self.delta_messages = delta_messages  # list of message in window delta
 
 class Message_handler:
     """
@@ -36,23 +38,47 @@ class Message_handler:
     on a time window (timestamp-delta to timestamp+delta) and outputs a
     Synched_messages object
     """
-    def __init__(self):
+    def __init__(self, delta):
         """
         This constructor declares a raw list of bundled messages, ie,
         can be from multiple sources or in any window
         """
-        self.raw_messages = []
+        self.raw_messages = []  # track all raw messages read
+        self.msg_counter = 0  # current message number
+        self.max_messages = 5  # max number of messages before sync
+        self.delta = delta
 
-    def read_message(self,message):
+    def read_stream(self, message):
         """
         reads a message and appends to list
 
-        :param message: Message (type)
+        :param message: Message object
         """
+
+        # self.sync_time_counter = time.time()  # get current time
+
+        # check how much time passed
+
         self.raw_messages.append(message)
 
-    # output messages within time frame
-    def get_messages(self,timestamp,delta):
+        # self.msg_counter += 1
+
+        # if self.msg_counter > self.max_messages:
+        #     self.msg_counter = 0
+        #     return self.get_messages(message.timestamp, self.delta)
+        #
+        # return None
+
+        # set conditions on when to return messages
+        # if self.msg_counter > self.max_messages or self.sync_time_counter > self.sync_time_max:
+        #     self.get_messages(message.timestamp)
+        #
+        #     return self.get_messages(message.timestamp,self.delta)
+        # else:
+        #     return None
+
+    # output messages within time frame, and validates sources
+    def get_messages(self, timestamp, delta):
         """
         This function iterates through all the raw grouped messages and returns
         a Synched_messages object that meet the criteria, which are if the
@@ -75,4 +101,5 @@ class Message_handler:
                     message.timestamp > timestamp - delta:
                     delta_messages.append(message)  # add message to list
         # create a synched_message object, return it
-        return Synched_messages(timestamp,delta_messages)
+        self.raw_messages = []
+        return Synched_messages(timestamp, delta_messages)
